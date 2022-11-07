@@ -69,3 +69,26 @@ input{
   gap: 1rem;
   width: 100%;
 }
+
+.chat-room{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  justify-items: center;
+  align-items: center;
+}
+
+.tab{
+  background-color: lightgrey;
+  cursor: pointer;
+  border: 1px solid black;
+  border-radius: 10px;
+  width: fit-content;
+  margin: 3px;
+  padding: 0.5rem;
+  text-transform: uppercase;
+}
+
+.compose{
+  grid-column: 1/-1 ;
+}

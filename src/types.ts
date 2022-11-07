@@ -15,3 +15,8 @@ export enum MessageType {
     message: string;
     date: string;
   }
+
+  export interface Tab{
+    currentTab:string;
+    isPublicChat:boolean;
+  }

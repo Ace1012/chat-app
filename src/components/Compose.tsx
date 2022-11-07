@@ -1,26 +1,27 @@
-import * as React from "react";
-import { UserMessageDetails } from "../types";
+import { useState } from "react";
+import { Tab, UserMessageDetails } from "../types";
 
 interface ComposeProps {
   sendPubMess: () => void;
   userMessageData: UserMessageDetails;
+  tab:Tab;
   setUserMessageData: React.Dispatch<React.SetStateAction<UserMessageDetails>>;
 }
 
 const Compose = ({
   sendPubMess,
   userMessageData,
+  tab,
   setUserMessageData,
 }: ComposeProps) => {
 
   const handlePubMess = ( e: React.ChangeEvent<HTMLInputElement>) => {
     setUserMessageData({ ...userMessageData, message: e.target.value })
-
   }
 
   return (
     <div className="compose">
-      <div className="public-messages">
+      {tab.isPublicChat ? <div className="public-messages">
         <input
           type="text"
           placeholder="Enter public message"
@@ -31,10 +32,11 @@ const Compose = ({
         />
         <button onClick={() => sendPubMess()}>Send</button>
       </div>
+      :
       <div className="private-messages">
         <input type="text" placeholder="Enter private message" />
         <button>Send</button>
-      </div>
+      </div>}
     </div>
   );
 };

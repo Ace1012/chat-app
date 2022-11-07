@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import useConnect from "../custom-hooks/useConnect";
-import { UserLoginData, UserMessageDetails } from "../types";
+import { Tab, UserLoginData, UserMessageDetails } from "../types";
 import { Client, Message } from "stompjs";
 import Compose from "./Compose";
 
@@ -24,6 +24,10 @@ const ChatRoom = () => {
 
   const [publicChats, setPublicChats] = useState<string[]>([]);
   const [privateChats, setPrivateChats] = useState(new Map<string, string[]>());
+  const [tab, setTab] = useState<Tab>({
+    currentTab: "public-chat",
+    isPublicChat: true,
+  });
 
   const [stomp, setStomp] = useState<Client | null>(null);
 
@@ -43,7 +47,7 @@ const ChatRoom = () => {
   };
 
   const handleFocusedElement = () => {
-    console.log("yoyoyo");
+    console.log("Element focus event");
     if (inputRef.current) {
       console.log(inputRef);
       if (inputRef.current === document.activeElement) {
@@ -66,14 +70,17 @@ const ChatRoom = () => {
       case "JOIN":
         if (!privateChats.get(response.senderName)) {
           console.log("User not found!", privateChats);
-          privateChats.set(response.senderName,[])
-          setPrivateChats(privateChats)
+          privateChats.set(response.senderName, []);
+          setPrivateChats(
+            (prev) =>
+              new Map<string, string[]>([...prev, [response.senderName, []]])
+          );
           console.log("User added!", privateChats);
         }
         break;
       case "MESSAGE":
         console.log("New message!");
-        setPublicChats(prev => [...prev, response.message])
+        setPublicChats((prev) => [...prev, response.message]);
         break;
     }
   };
@@ -85,15 +92,13 @@ const ChatRoom = () => {
       privateChats.get(response.senderName)?.push(response);
       setPrivateChats(privateChats);
     } else {
-      setPrivateChats(
-        (prev) =>
-          new Map<string, string[]>([...prev, [response.senderName, response]])
-      );
+      privateChats.set(response.senderName, response);
+      setPrivateChats(privateChats);
     }
   };
 
   const sendPubMess = () => {
-    console.log("sending message!");
+    console.log("sending PubMess!");
     if (stomp) {
       let message = {
         senderName: userLoginData.userName,
@@ -102,6 +107,21 @@ const ChatRoom = () => {
       };
       stomp.send(`/app/message`, {}, JSON.stringify(message));
       setUserMessageData({ ...userMessageData, message: "" });
+    }
+  };
+
+  const handleTabs = (user: string) => {
+    if (tab.currentTab !== user) {
+      let newTab: Tab = {
+        currentTab: user,
+        isPublicChat: user === "public-chat" ? true : false,
+      };
+
+      user === "public-chat"
+        ? setUserMessageData({ ...userMessageData, receiverName: "" })
+        : setUserMessageData({ ...userMessageData, receiverName: user });
+
+      setTab(newTab);
     }
   };
 
@@ -126,15 +146,23 @@ const ChatRoom = () => {
       ...userMessageData,
       senderName: userLoginData.userName,
     });
-  }, [userLoginData.connected, userLoginData.userName]);
+  }, [userLoginData]);
 
   useEffect(() => {
-    console.log('Public chats updated!',publicChats);
-  },[publicChats])
+    console.log(`MessageData changed!`, userMessageData);
+  }, [userMessageData]);
 
   useEffect(() => {
-    console.log('Private chats updated!',privateChats);
-  },[privateChats])
+    console.log("Switched tabs!", tab);
+  }, [tab]);
+
+  useEffect(() => {
+    console.log("Public chats updated!", publicChats);
+  }, [publicChats]);
+
+  useEffect(() => {
+    console.log("Private chats updated!", privateChats);
+  }, [privateChats]);
 
   useEffect(() => {
     window.addEventListener("keydown", focusOnInput);
@@ -149,22 +177,27 @@ const ChatRoom = () => {
     <div className="chat-app">
       {userLoginData.connected ? (
         <div className="chat-room">
-          <div className="tabs">
-            <ul>
-              {[privateChats.keys()].map((username, index) => (
-                <li key={index}>{username}</li>
-              ))}
-            </ul>
-            <ul>
-              {publicChats.map((chat, index) => (
-                <li key={index}>{chat}</li>
-              ))}
-            </ul>
-          </div>
+          <ul className="tabs">
+            <h2>Tabs:</h2>
+            {["public-chat", ...privateChats.keys()].map((tab, index) => (
+              <li className="tab" key={index} onClick={() => handleTabs(tab)}>
+                {tab}
+              </li>
+            ))}
+          </ul>
+          <ul>
+            Chat:
+            {tab.isPublicChat
+              ? publicChats.map((chat, index) => <li key={index}>{chat}</li>)
+              : privateChats
+                  .get(tab.currentTab)
+                  ?.map((chat, index) => <li key={index}>{chat}</li>)}
+          </ul>
           <Compose
             sendPubMess={sendPubMess}
             userMessageData={userMessageData}
             setUserMessageData={setUserMessageData}
+            tab={tab}
           />
         </div>
       ) : (
