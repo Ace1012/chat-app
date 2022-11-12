@@ -1,42 +1,49 @@
-import { useState } from "react";
 import { Tab, UserMessageDetails } from "../types";
 
 interface ComposeProps {
   sendPubMess: () => void;
+  sendPrivMess: () => void;
   userMessageData: UserMessageDetails;
-  tab:Tab;
   setUserMessageData: React.Dispatch<React.SetStateAction<UserMessageDetails>>;
+  tab: Tab;
 }
 
 const Compose = ({
   sendPubMess,
+  sendPrivMess,
   userMessageData,
-  tab,
   setUserMessageData,
+  tab
 }: ComposeProps) => {
-
-  const handlePubMess = ( e: React.ChangeEvent<HTMLInputElement>) => {
-    setUserMessageData({ ...userMessageData, message: e.target.value })
-  }
+  const handleMess = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUserMessageData({ ...userMessageData, message: e.target.value });
+  };
 
   return (
     <div className="compose">
-      {tab.isPublicChat ? <div className="public-messages">
-        <input
-          type="text"
-          placeholder="Enter public message"
-          value={userMessageData.message}
-          onChange={(e) =>
-            handlePubMess(e)
-          }
-        />
-        <button onClick={() => sendPubMess()}>Send</button>
-      </div>
-      :
-      <div className="private-messages">
-        <input type="text" placeholder="Enter private message" />
-        <button>Send</button>
-      </div>}
+      {tab.isPublicChat ? (
+        <div className="public-messages">
+          <input
+            type="text"
+            placeholder="Enter public message"
+            value={userMessageData.message}
+            onChange={(e) => handleMess(e)}
+            onKeyDown={(e) => e.key === "Enter" ? sendPubMess() : null}
+          />
+          <button onClick={() => sendPubMess()}>Send</button>
+        </div>
+      ) : (
+        <div className="private-messages">
+          <input
+            type="text"
+            placeholder="Enter private message"
+            value={userMessageData.message}
+            onChange={(e) => handleMess(e)}
+            onKeyDown={(e) => e.key === "Enter" ? sendPrivMess() : null}
+          />
+          <button onClick={() => sendPrivMess()}>Send</button>
+        </div>
+      )}
     </div>
   );
 };

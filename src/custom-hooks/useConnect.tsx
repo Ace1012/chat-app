@@ -1,11 +1,10 @@
-import * as React from "react";
 import { UserLoginData } from "../types";
 import SockJS from "sockjs-client/dist/sockjs";
 import { Client, Frame, Message, over } from "stompjs";
 
 interface UseConnectprops {
   userLoginData: UserLoginData;
-  setUserLoginData:React.Dispatch<React.SetStateAction<UserLoginData>>;
+  setUserLoginData: (userLoginData:UserLoginData ) => void;
   onPublicMessageReceived: (payload: Message) => void;
   onPrivateMessageReceived: (payload: Message) => void;
 }
@@ -31,7 +30,7 @@ const useConnect = ({
       senderName: userData.userName,
       messageType:"JOIN"
     };
-    stompClient?.send("/app/message", {}, JSON.stringify(message));
+    stompClient?.send("/app/public-message", {}, JSON.stringify(message));
 }
 
   const onConnected = () => {

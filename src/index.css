@@ -9,28 +9,22 @@ li{
 }
 
 body{
+  position: relative;
   width: 100vw;
   height: 100vh;
+  background-color: #212121;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #212121;
-}
-
-input{
-  transition: all ease-in-out 150ms;
 }
 
 .home{
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   width: fit-content;
-  border: 1px solid black;
+  border: 1px solid rgb(175, 175, 175);
   background-color: rgb(155, 85, 85);
   padding: 1rem;
   border-radius: 10px;
+  resize: both;
 }
 
 .login{
@@ -40,6 +34,10 @@ input{
   align-items: center;
   gap: 1rem;
   width: 100%;
+}
+
+.login input{
+  transition: all ease-in-out 200ms;
 }
 
 .login-button{
@@ -56,11 +54,9 @@ input{
 @keyframes button-click{
   0%{
     transform: translateY(0);
-    /* box-shadow: 0 0 0 0 black; */
   }
   100%{
     transform: translateY(3px);
-    /* box-shadow: 0 0 10px 10px black; */
   }
 }
 
@@ -72,10 +68,60 @@ input{
 
 .chat-room{
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 3fr;
   gap: 1rem;
   justify-items: center;
   align-items: center;
+}
+
+.chat-room header{
+  text-align: center;
+  width: 100%;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  grid-column: 1/-1;
+  text-transform: capitalize;
+}
+
+.chat-room header h1{
+  margin-left: 50%;
+}
+
+.chat-room header button{
+  cursor: pointer;
+  border-radius: 10px;
+  padding: 0.5rem;
+  transition: all ease-in-out 150ms;
+}
+
+.chat-room header button:hover{
+  background-color: purple;
+  color: white;
+}
+
+.online-users{
+  display: flex;
+  flex-direction: column;
+}
+
+.online-user{
+  background-color: lightgrey;
+  cursor: pointer;
+  border: 1px solid black;
+  border-radius: 10px;
+  width: fit-content;
+  margin: 3px;
+  padding: 0.5rem;
+  text-transform: uppercase;
+  user-select: none;
+}
+
+.tabs{
+  border: 1px solid black;
+  height: 100%;
+  width: 100%;
+  padding: 0 0.5rem;
 }
 
 .tab{
@@ -87,8 +133,29 @@ input{
   margin: 3px;
   padding: 0.5rem;
   text-transform: uppercase;
+  user-select: none;
+}
+
+.selected, .online-user:hover{
+  background-color: purple;
+  color: white;
 }
 
 .compose{
   grid-column: 1/-1 ;
+}
+
+.chats{
+  border: 1px solid black;
+  height: 100%;
+  width: 100%;
+  padding: 0.3rem 0.5rem;
+}
+
+.chat{
+  background-color: lightgrey;
+  border-radius: 10px;
+  width: fit-content;
+  margin: 0.5rem 0;
+  padding: 0.5rem;
 }
